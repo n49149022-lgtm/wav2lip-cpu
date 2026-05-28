@@ -24,11 +24,11 @@ jobs:
       - name: 📚 Install Python Deps
         run: pip install -r requirements.txt
 
-      - name: ⬇️ Download Weights
+      - name: ⬇️ Download Weights (curl + HF mirror)
         run: |
           mkdir -p checkpoints
-          wget -q -O checkpoints/wav2lip_gan.pth "https://github.com/justinjohn0306/Wav2Lip/releases/download/1.0/wav2lip_gan.pth"
-          wget -q -O checkpoints/shape_predictor_68_face_landmarks.dat "https://github.com/justinjohn0306/Wav2Lip/releases/download/1.0/shape_predictor_68_face_landmarks.dat"
+          curl -fSL "https://huggingface.co/justinjohn0306/Wav2Lip/resolve/main/wav2lip_gan.pth" -o checkpoints/wav2lip_gan.pth
+          echo "✅ Weights downloaded: $(ls -lh checkpoints/wav2lip_gan.pth)"
 
       - name: 🎬 Run Demo Generation
         run: python app.py --demo
