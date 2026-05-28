@@ -1,0 +1,41 @@
+name: 🎬 Wav2Lip Talking Head (CPU)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📦 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: 📦 Install System Deps
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: 🔥 Install PyTorch CPU
+        run: pip install torch==2.1.0+cpu torchvision==0.16.0+cpu torchaudio==2.1.0+cpu --index-url https://download.pytorch.org/whl/cpu
+
+      - name: 📚 Install Python Deps
+        run: pip install -r requirements.txt
+
+      - name: ⬇️ Download Weights
+        run: |
+          mkdir -p checkpoints
+          wget -q -O checkpoints/wav2lip_gan.pth "https://github.com/justinjohn0306/Wav2Lip/releases/download/1.0/wav2lip_gan.pth"
+          wget -q -O checkpoints/shape_predictor_68_face_landmarks.dat "https://github.com/justinjohn0306/Wav2Lip/releases/download/1.0/shape_predictor_68_face_landmarks.dat"
+
+      - name: 🎬 Run Demo Generation
+        run: python app.py --demo
+
+      - name: 📤 Upload Result
+        uses: actions/upload-artifact@v4
+        with:
+          name: wav2lip-result
+          path: output_demo.mp4
+          retention-days: 7
